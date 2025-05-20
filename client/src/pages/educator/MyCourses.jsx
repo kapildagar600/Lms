@@ -1,17 +1,32 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../context/AppContext'
 import Loading from '../../components/student/Loading'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const MyCourses = () => {
-  const {currency,allCourses} = useContext(AppContext)
+  const {currency,backendUrl,getToken,isEducator} = useContext(AppContext)
   const [courses,setCourses] = useState(null)
 
   const fetchCourseData = async ()=>{
-    setCourses(allCourses)
+    // setCourses(allCourses)
+    try {
+      const token = await getToken()
+      const {data} = await axios.get(backendUrl+'/api/educator/courses',{headers:{Authorization:`Bearer ${token}`}})
+      console.log(data.courses)
+      data.success && setCourses(data.courses)
+      
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
   useEffect(()=>{
-    fetchCourseData()
-  },[])
+    if(isEducator){
+      fetchCourseData()
+    }
+      // setCourses(allCourses)
+    
+  },[isEducator])
 
   return courses ?(
     <div className='h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0'>
@@ -30,15 +45,16 @@ const MyCourses = () => {
      </thead>
 
      <tbody className='text-sm text-gray-500'>
-       
+       {console.log(courses)}
         {courses.map((course)=>(
           <tr key={course._id} className='border-b border-gray-500/20'>
             <td className='md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate'>
               <img src={course.courseThumbnail} alt="course_image" className='w-16' />
               <span className='truncate hidden md:block'>{course.courseTitle}</span>
             </td>
-            <td className='px-4 py-3'>{currency} {Math.floor(course.enrolledStudents.length * (course.coursePrice - course.discount * course.coursePrice /100))}</td>
-            <td className='px-4 py-3'>{course.enrolledStudents.length}</td>
+            <td className='px-4 py-3'>{currency} {Math.floor((course.enrolledStudents?.length || 0) * (course.coursePrice - course.discount * course.coursePrice /100))}</td>
+            <td className='px-4 py-3'>{course?.enrolledStudents?.length || 0}</td>
+            {/* {console.log('course is:',course)} */}
             <td className='px-4 py-3'>{new Date(course.createdAt).toLocaleDateString()}</td>
           </tr>
         ))}

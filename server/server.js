@@ -11,10 +11,10 @@ import courseRouter from './routes/courseRoutes.js'
 import userRouter from './routes/userRoutes.js'
 
 dotenv.config()
-console.log("clerk publishable key : ",process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)
+
 //initialize express
 const app = express()
-
+app.post('/stripe',express.raw({type: 'application/json'}),stripeWebhooks)
 //connect to database
 await connectDB()
 await connectCloudinary()
@@ -31,7 +31,7 @@ app.post('/clerk',express.json(),clerkWebHooks)
 app.use('/api/educator',express.json(),educatorRouter)
 app.use('/api/course',express.json(),courseRouter)
 app.use('/api/user',express.json(),userRouter)
-app.post('/stripe',express.raw({type: 'application/json'}),stripeWebhooks)
+
 
 //port
 const PORT = process.env.PORT || 5000

@@ -26,7 +26,7 @@ export const userEnrolledCourses = async (req,res)=>{
         const userId = req.auth.userId;
         const userData = await User.findById(userId).populate('enrolledCourses')
 
-        res.json({success:true,EnrolledCourses:userData.enrolledCourses})
+        res.json({success:true,enrolledCourses:userData.enrolledCourses})
     } catch (error) {
         res.json({success:false,message:error.message})
     }
@@ -42,7 +42,7 @@ export const purchaseCourse = async (req,res)=>{
         const courseData = await Course.findById(courseId)
 
         if(!userData || !courseData){
-            res.json({success:false,message:"Data not found"})
+           return res.json({success:false,message:"Data not found"})
         }
 
         const purchaseData = {

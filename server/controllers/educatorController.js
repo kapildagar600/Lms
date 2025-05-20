@@ -27,7 +27,7 @@ export const updateRoleToEducator = async (req, res)=>{
         const educatorId = req.auth.userId;
 
         if(!imageFile){
-        res.json({success:false, message:'Thumbnail not attached'})
+       return res.json({success:false, message:'Thumbnail not attached'})
         }
         const parsedCourseData = await JSON.parse(courseData)
         parsedCourseData.educator = educatorId
@@ -89,13 +89,13 @@ export const educatorDashboardData = async (req,res)=>{
                 student
                })
             })
-            res.json({success:true,dashboardData:{
+          return  res.json({success:true,dashboardData:{
                 totalEarnings,enrolledStudentsData,totalCourses
             }})
         }
     }
     catch(error){
-        res.json({success:false,message:error.message})
+      return  res.json({success:false,message:error.message})
     }
     
 }
